@@ -46,6 +46,15 @@ func ExportConsumeCsv(file string, consumes []ConsumePoi)  {
 	exportToCSVFile(file, ifaces)
 }
 
+func ExportConsumeReverseCsv(file string, consumes []ConsumePoi)  {
+	ifaces := make([]interface{}, len(consumes))
+	for i := range consumes {
+		ifaces[i] = consumes[i]
+	}
+
+	exportToCSVFile(file, ifaces)
+}
+
 func exportToCSVFile(filename string, ifaces []interface{}) {
 	if err := os.MkdirAll(path.Dir(filename), 0755); err != nil && !os.IsExist(err) {
 		log.Fatal(err)
@@ -73,8 +82,8 @@ func Record(t interface{}) []string {
 		f := reflect.ValueOf(t).Field(i)
 		if f.Type().Name() == "string" {
 			record[i] = fmt.Sprintf("\"%s\"", f.Interface())
-		} else if f.Type().Name() == "float" {
-			record[i] = strconv.FormatFloat(f.Float(), 'f', 8, 64)
+		} else if f.Type().Name() == "float64" {
+			record[i] = strconv.FormatFloat(f.Float(), 'f', 5, 64)
 		} else {
 			record[i] = fmt.Sprintf("%v", f.Interface())
 		}

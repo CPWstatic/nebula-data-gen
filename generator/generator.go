@@ -62,19 +62,20 @@ func GenerateUsers(fromIdx, cnt int64) []User {
 			Age:                    fmt.Sprint("age:", vid),
 			Residence:              fmt.Sprint("rs:", vid),
 			MtUserFirstPayDate:     fmt.Sprint("fpd:", vid),
-			MtUserXmdCampaignMoney: rand.Float64(),
-			MtUserPoiCampaignMoney: rand.Float64(),
+			MtUserXmdCampaignMoney: rand.Float64() * 10,
+			MtUserPoiCampaignMoney: rand.Float64() * 10,
 			DpUserFirstPayDate:     fmt.Sprint("dpfpd:", vid),
-			DpUserXmdCampaignMoney: rand.Float64(),
-			DpUserPoiCampaignMoney: rand.Float64(),
+			DpUserXmdCampaignMoney: rand.Float64() * 10,
+			DpUserPoiCampaignMoney: rand.Float64() * 10,
 		}
 	}
 
 	return users
 }
 
-func GenerateConsumePoi(users []User, pois []Poi) []ConsumePoi {
+func GenerateConsumePoi(users []User, pois []Poi) ([]ConsumePoi, []ConsumePoi) {
 	var consumes []ConsumePoi
+	var consumes_reverses []ConsumePoi
 
 	for _, u :=range users {
 		numConsume := rand.Intn(10);
@@ -86,12 +87,23 @@ func GenerateConsumePoi(users []User, pois []Poi) []ConsumePoi {
 				Ranking:   0,
 				SourceMid: u.Mid,
 				TargetMid: pois[pId].Mid,
-				Weight:    rand.Float64(),
+				Weight:    rand.Float64() * 10,
 			}
 
 			consumes = append(consumes, consume)
+
+			consume_reverse := ConsumePoi{
+				Src:       int64(pId),
+				Dst:       u.VID,
+				Ranking:   0,
+				SourceMid: u.Mid,
+				TargetMid: pois[pId].Mid,
+				Weight:    rand.Float64() * 10,
+			}
+
+			consumes_reverses = append(consumes_reverses, consume_reverse)
 		}
 	}
 
-	return consumes
+	return consumes, consumes_reverses
 }

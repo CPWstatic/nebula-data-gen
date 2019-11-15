@@ -6,15 +6,15 @@ import (
 )
 
 var (
-	poiCnt int64 = 100
-	userCnt int64 = 1000
+	poiCnt int64 = 1000
+	userCnt int64 = 1000 * 1000
 )
 
 func main()  {
 	var pois []gen.Poi
 	var geos []gen.Geo
 	var users []gen.User
-	var consumes []gen.ConsumePoi
+	var consumes, consume_reverses []gen.ConsumePoi
 
 
 	/* gen vertex*/
@@ -37,7 +37,7 @@ func main()  {
 	genWg.Wait()
 
 	/*gen edges*/
-	consumes = gen.GenerateConsumePoi(users, pois)
+	consumes, consume_reverses = gen.GenerateConsumePoi(users, pois)
 
 	/*export*/
 	var expWg sync.WaitGroup
@@ -64,6 +64,12 @@ func main()  {
 	go func() {
 		defer expWg.Done()
 		gen.ExportConsumeCsv("./consume.csv", consumes)
+	}()
+
+	expWg.Add(1)
+	go func() {
+		defer expWg.Done()
+		gen.ExportConsumeCsv("./consume_reverse.csv", consume_reverses)
 	}()
 
 	expWg.Wait()
